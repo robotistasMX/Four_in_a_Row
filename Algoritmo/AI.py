@@ -1,8 +1,10 @@
+import tkinter as tk
 import numpy as np
 import pygame
 import sys
 import math
 import random
+import time
 
 BLUE = (0,0,255)
 BLACK = (0,0,0)
@@ -249,6 +251,63 @@ def draw_board(board):
 				pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
 	pygame.display.update()
 
+def sf():
+
+	dificultad.set(1)
+	time.sleep(1)
+	ventana.destroy()
+	print(dificultad)
+
+def f():
+
+	dificultad.set(2)
+	time.sleep(1)
+	ventana.destroy()
+	print(dificultad)
+
+def im():
+
+	dificultad.set(3)
+	time.sleep(1)
+	ventana.destroy()
+	print(dificultad)
+
+def df():
+	
+	dificultad.set(4)
+	time.sleep(1)
+	ventana.destroy()
+	print(dificultad)
+
+#dificultad = input("Escoge un nivel:\n1.Super facil\n2.Facil\n3.Intermedio\n4.Dificil\n")
+
+ventana = tk.Tk()
+
+ventana.title("HolaMundo")
+ventana.geometry('500x500')
+ventana.configure(background = 'steel blue')
+dificultad = tk.IntVar()
+
+titulo = tk.Label(ventana, text = "Conecta4 IA", bg = "black", fg = "white")
+titulo.pack(fill = tk.X)
+
+espacio = tk.Label(ventana, bg = "steel blue")
+espacio.pack(pady = 30)
+
+sfacil = tk.Button(ventana, text = "Super Facil", bg = "green", fg = "black", command = sf)
+sfacil.pack(fill = tk.X, ipady = 20)
+
+facil = tk.Button(ventana, text = "Facil", bg = "yellow", fg = "black", command = f)
+facil.pack(fill = tk.X, ipady = 20)
+
+intermedio = tk.Button(ventana, text = "Intermedio", bg = "orange", fg = "black", command = im)
+intermedio.pack(fill = tk.X, ipady = 20)
+
+dificil = tk.Button(ventana, text = "Dificil", bg = "red", fg = "black", command = df)
+dificil.pack(fill = tk.X, ipady = 20)
+
+ventana.mainloop()
+
 board = create_board()
 print_board(board)
 game_over = False
@@ -285,7 +344,7 @@ while not game_over:
 
 			pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
 			posx = event.pos[0]
-            
+			
 			if turn == PLAYER:
 				pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE/2)), RADIUS)
 		
@@ -320,12 +379,20 @@ while not game_over:
 					draw_board(board)
 
 
-    # # Ask for Player 2 Input
+	# # Ask for Player 2 Input
 	if turn == AI and not game_over:
 
-		#col = random.randint(0, COLUMN_COUNT-1)
-		#col = easy_mode(board, AI_PIECE)
-		col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
+		if dificultad.get() == 1:
+			col = random.randint(0, COLUMN_COUNT-1)
+
+		elif dificultad.get() == 2:
+			col = easy_mode(board, AI_PIECE)
+
+		elif dificultad.get() == 3:
+			col, minimax_score = minimax(board, 3, -math.inf, math.inf, True)
+
+		elif dificultad.get() == 4:
+			col, minimax_score = minimax(board, 6, -math.inf, math.inf, True)
 
 		if is_valid_location(board, col):
 
