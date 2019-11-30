@@ -293,7 +293,7 @@ while not game_over:
 				# Ask for Player 1 Input
 					print("ENTER")
 					columna=int(input())
-					print(columna*100-1)
+					print((columna+1)*100)
 					event.pos=[(columna*100)-1,0]
 					if turn == PLAYER:
 
