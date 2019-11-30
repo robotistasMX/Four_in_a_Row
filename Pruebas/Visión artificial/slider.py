@@ -13,6 +13,7 @@ cv.createTrackbar('Upper Hue', 'slider', 0, 255, nothing)
 cv.createTrackbar('Upper Sat', 'slider', 0, 255, nothing)
 cv.createTrackbar('Upper Val', 'slider', 0, 255, nothing)
 
+
 while(1):
     ret, frame= cap.read()
     hsv= cv.cvtColor(frame, cv.COLOR_BGR2HSV)
@@ -34,11 +35,6 @@ while(1):
     filter = cv.erode(filter, cv.getStructuringElement(cv.MORPH_RECT,(5,5)), iterations=1)
 
     result = cv.bitwise_and(frame, frame, mask = filter)
-    object= cv.moments(filter)
-    if object['m00'] > 50000:
-        cx= int(object['m10']/object['m00'])
-        cy= int(object['m01']/object['m00'])
-        cv.circle(result, (cx,cy), 40, (0,255,0), 2)
 
     cv.imshow('frame', frame)
     cv.imshow('result', result)
@@ -48,4 +44,4 @@ while(1):
         break
 
 cap.release()
-cv.destroyAllWindows
+cv.destroyAllWindows()
