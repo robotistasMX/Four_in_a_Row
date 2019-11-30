@@ -314,6 +314,7 @@ game_over = False
 turn = 0
 
 pygame.init()
+pygame.display.set_mode((0, 0))
 
 SQUARESIZE = 100
 
