@@ -46,7 +46,7 @@ while(1):
 cap.release()
 cv.destroyAllWindows()
 
-file= open("data.txt", "w")
+file= open("../data.txt", "w")
 file.write(str(lowHue)+'\n'+str(lowSat)+'\n'+str(lowVal)+'\n')
 file.write(str(upperHue)+'\n'+str(upperSat)+'\n'+str(upperVal)+'\n')
 

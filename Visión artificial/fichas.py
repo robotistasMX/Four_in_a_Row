@@ -3,7 +3,7 @@ import numpy as np
 import time
 cap= cv.VideoCapture(0)
 
-file= open("data.txt", "r")
+file= open("../data.txt", "r")
 low= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
 upper=  np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
 cA= int(file.readline())
