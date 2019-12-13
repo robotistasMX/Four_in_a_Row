@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 cap= cv.VideoCapture(0)
+asd= 0
 
 def nothing(x):
     pass
@@ -36,33 +37,36 @@ while(1):
     filter = cv.erode(filter, cv.getStructuringElement(cv.MORPH_RECT,(5,5)), iterations=1)
     result = cv.bitwise_and(frame, frame, mask = filter)
 
-    gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
-    gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
-    circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 25, 10, 70)
-    if circles is not None:
-        try:
-            for c in circles[0]:
-                cv.circle(frame, (c[0],c[1]), c[2], (0,0,255),2)
-                if(c[1]>380):
-                    column.append(int(c[0]))
-        except:
-            pass
+    if asd:
+        gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
+        gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
+        circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 30, 10, 70)
+        if circles is not None:
+            try:
+                for c in circles[0]:
+                    cv.circle(frame, (c[0],c[1]), c[2], (0,0,255),2)
+                    if(c[1]>380):
+                        column.append(int(c[0]))
+            except:
+                pass
 
-    column.sort()
-    average= 0
-    for i in range(1,len(column)):
-        average+= column[i]-column[i-1]
-    average= int(average/6)
+        column.sort()
+        average= 0
+        for i in range(1,len(column)):
+            average+= column[i]-column[i-1]
+        average= int(average/6)
 
-    for i in range(len(column)):
-        cv.line(frame, (int(column[i]+average/2), 0), (int(column[i]+average/2), 600), (0,255,0), 2)
-    print(average)
+        for i in range(len(column)):
+            cv.line(frame, (int(column[i]+average/2), 0), (int(column[i]+average/2), 600), (0,255,0), 2)
+        print(average)
 
     cv.line(frame, (0, 389), (800, 389), (0,255,0), 2)
     cv.imshow('frame', frame)
     cv.imshow('result', result)
 
     w=cv.waitKey(1)
+    if w & 0xFF == ord("x"):
+        asd= 1
     if w==27:
         break
 

@@ -10,6 +10,7 @@ cA= int(file.readline())
 c1= int(file.readline())
 file.close()
 
+last=[0,0,0,0,0,0,0]
 grid=[]
 for i in range(7):
     grid.append(list())
@@ -19,6 +20,7 @@ for i in range(7):
 while(1):
     ret, frame= cap.read()
     hsv= cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    current=[0,0,0,0,0,0,0]
 
     #Fichas rojas
     hsv = cv.GaussianBlur(hsv, (1,1), 2)
@@ -32,11 +34,12 @@ while(1):
 
     gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
     gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
-    circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 20, 10, 70)
+    circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 35, 10, 70)
     if circles is not None:
         try:
             for c in circles[0]:
                 cv.circle(frame, (c[0],c[1]), c[2], (0,0,255),2)
+                current[int((c[0]-c1+cA/2)/cA)]+=1
             print(len(circles[0]))
         except:
             pass
@@ -49,8 +52,12 @@ while(1):
         break
     if w & 0xFF == ord("x"):
         print("asdfg")
-        ans= int((circles[0][0]-c1+cA/2)/cA)
+        ans=-1
+        for i in range(7):
+            if last[i]!=current[i]:
+                ans= i
         print(ans)
+        last= current
         time.sleep(1)
 
 cap.release()

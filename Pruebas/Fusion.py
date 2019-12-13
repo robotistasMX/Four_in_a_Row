@@ -21,8 +21,9 @@ cA= int(file.readline())
 c1= int(file.readline())
 file.close()
 
-#ser1=serial.Serial('COM19',9600)
+ser1=serial.Serial('COM19',9600)
 
+last=[0,0,0,0,0,0,0]
 grid=[]
 for i in range(7):
     grid.append(list())
@@ -41,8 +42,8 @@ PLAYER = 0
 AI = 1
 
 EMPTY = 0
-PLAYER_PIECE = 1
-AI_PIECE = 2
+PLAYER_PIECE = 2
+AI_PIECE = 1
 
 WINDOW_LENGTH = 4
 
@@ -305,33 +306,34 @@ def mdf():
 	print(dificultad.get())
 
 ventana = tk.Tk()
-ventana.geometry('1300x500')
+ventana.geometry('1300x450')
 ventana.title("HolaMundo")
 
 ventana.configure(background = 'black')
 dificultad = tk.IntVar()
 
-titulo = tk.Label(ventana, text = "Conecta4 IA", bg = "black", fg = "white")
-titulo.pack(fill = tk.X)
+img= ImageTk.PhotoImage(Image.open("Interfaz/titulo.jpeg"))
+titulo = tk.Label(ventana, image= img, bg = "black", bd=0, activebackground="black")
+titulo.pack(side = TOP, expand = True, fill = BOTH)
 
-img_sf = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/sf.png"))
-sfacil = tk.Button(ventana, image= img_sf, text = "Muy Facil", bg = "black", bd=0, activebackground="black" ,command = sf)
+img_sf = ImageTk.PhotoImage(Image.open("Interfaz/sf.png"))
+sfacil = tk.Button(ventana, image= img_sf, bg = "black", bd=0, activebackground="black" ,command = sf)
 sfacil.pack(side = LEFT, expand = True, fill = BOTH)
 
-img_f = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/f.png"))
-facil = tk.Button(ventana, text = "Facil", image= img_f, bg = "black", bd=0, activebackground="black", command = f)
+img_f = ImageTk.PhotoImage(Image.open("Interfaz/f.png"))
+facil = tk.Button(ventana, image= img_f, bg = "black", bd=0, activebackground="black", command = f)
 facil.pack(side = LEFT, expand = True, fill = BOTH)
 
 img_im = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/im.png"))
-intermedio = tk.Button(ventana, text = "Intermedio", image= img_im, bg = "black", bd=0, activebackground="black", command = im)
+intermedio = tk.Button(ventana, image= img_im, bg = "black", bd=0, activebackground="black", command = im)
 intermedio.pack(side = LEFT, expand = True, fill = BOTH)
 
 img_df = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/df.png"))
-dificil = tk.Button(ventana, text = "Dificil", image= img_df, bg = "black", bd=0, activebackground="black", command = df)
+dificil = tk.Button(ventana, image= img_df, bg = "black", bd=0, activebackground="black", command = df)
 dificil.pack(side = LEFT, expand = True, fill = BOTH)
 
 img_mdf = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/mdf.png"))
-mdificil = tk.Button(ventana, text = "Muy Dificil", image= img_mdf, bg = "black", bd=0, activebackground="black", command = mdf)
+mdificil = tk.Button(ventana, image= img_mdf, bg = "black", bd=0, activebackground="black", command = mdf)
 mdificil.pack(side = LEFT, expand = True, fill = BOTH)
 
 ventana.mainloop()
@@ -361,6 +363,8 @@ pygame.display.update()
 myfont = pygame.font.SysFont("monospace", 75)
 
 turn = random.randint(PLAYER, AI)
+if dificultad.get()==4:
+	turn = PLAYER
 if dificultad.get()==5:
 	turn = AI
 
@@ -381,6 +385,7 @@ while not game_over:
 			while(True):
 				ret, frame= cap.read()
 				hsv= cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+				current=[0,0,0,0,0,0,0]
 
 				#Fichas rojas
 				hsv = cv.GaussianBlur(hsv, (1,1), 2)
@@ -394,11 +399,12 @@ while not game_over:
 
 				gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
 				gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
-				circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 20, 10, 70)
+				circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 30, 10, 70)
 				if circles is not None:
 					try:
 						for c in circles[0]:
 							cv.circle(frame, (c[0],c[1]), c[2], (0,0,255),2)
+							current[int((c[0]-c1+cA/2)/cA)]+=1
 						print(len(circles[0]))
 					except:
 						pass
@@ -409,8 +415,16 @@ while not game_over:
 				w=cv.waitKey(1)
 				if w & 0xFF == ord("x"):
 					print("asdfg")
-					columna= int((c[0]-c1+cA/2)/cA)+1
+					for i in range(7):
+						if last[i]!=current[i]:
+							columna= i+1
+					last= current
 					break
+
+			col_str= str(8)
+			ser1.write(col_str.encode())
+			time.sleep(.4)
+			ser1.flush()
 
 			print((columna)*100)
 			event.pos=[(columna*100)-1,0]
@@ -452,12 +466,12 @@ while not game_over:
 			col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
 
 		elif dificultad.get() == 5:
-			col, minimax_score = minimax(board, 7, -math.inf, math.inf, True)
+			col, minimax_score = minimax(board, 6, -math.inf, math.inf, True)
 
 		col_str= str(col)
-		#ser1.write(col_str.encode())
-		#time.sleep(1)
-		#ser1.flush()
+		ser1.write(col_str.encode())
+		time.sleep(.4)
+		ser1.flush()
 
 		if is_valid_location(board, col):
 
