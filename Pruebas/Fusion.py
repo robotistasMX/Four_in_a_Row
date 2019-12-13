@@ -8,16 +8,20 @@ import time
 import cv2 as cv
 import numpy as np
 import time
+import serial
+from tkinter import *
+from PIL import ImageTk, Image
+import os
 cap= cv.VideoCapture(0)
 
 file= open("../data.txt", "r")
 low= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
-upper=  np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
+upper= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
 cA= int(file.readline())
 c1= int(file.readline())
-rA= int(file.readline())
-r1= int(file.readline())
 file.close()
+
+#ser1=serial.Serial('COM19',9600)
 
 grid=[]
 for i in range(7):
@@ -271,61 +275,67 @@ def draw_board(board):
 	pygame.display.update()
 
 def sf():
-
 	dificultad.set(1)
 	time.sleep(1)
 	ventana.destroy()
-	print(dificultad)
+	print(dificultad.get())
 
 def f():
-
 	dificultad.set(2)
 	time.sleep(1)
 	ventana.destroy()
-	print(dificultad)
+	print(dificultad.get())
 
 def im():
-
 	dificultad.set(3)
 	time.sleep(1)
 	ventana.destroy()
-	print(dificultad)
+	print(dificultad.get())
 
 def df():
-
 	dificultad.set(4)
 	time.sleep(1)
 	ventana.destroy()
-	print(dificultad)
+	print(dificultad.get())
 
-#dificultad = input("Escoge un nivel:\n1.Super facil\n2.Facil\n3.Intermedio\n4.Dificil\n")
+def mdf():
+	dificultad.set(5)
+	time.sleep(1)
+	ventana.destroy()
+	print(dificultad.get())
 
 ventana = tk.Tk()
-
+ventana.geometry('1300x500')
 ventana.title("HolaMundo")
-ventana.geometry('500x500')
-ventana.configure(background = 'steel blue')
+
+ventana.configure(background = 'black')
 dificultad = tk.IntVar()
 
 titulo = tk.Label(ventana, text = "Conecta4 IA", bg = "black", fg = "white")
 titulo.pack(fill = tk.X)
 
-espacio = tk.Label(ventana, bg = "steel blue")
-espacio.pack(pady = 30)
+img_sf = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/sf.png"))
+sfacil = tk.Button(ventana, image= img_sf, text = "Muy Facil", bg = "black", bd=0, activebackground="black" ,command = sf)
+sfacil.pack(side = LEFT, expand = True, fill = BOTH)
 
-sfacil = tk.Button(ventana, text = "Super Facil", bg = "green", fg = "black", command = sf)
-sfacil.pack(fill = tk.X, ipady = 20)
+img_f = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/f.png"))
+facil = tk.Button(ventana, text = "Facil", image= img_f, bg = "black", bd=0, activebackground="black", command = f)
+facil.pack(side = LEFT, expand = True, fill = BOTH)
 
-facil = tk.Button(ventana, text = "Facil", bg = "yellow", fg = "black", command = f)
-facil.pack(fill = tk.X, ipady = 20)
+img_im = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/im.png"))
+intermedio = tk.Button(ventana, text = "Intermedio", image= img_im, bg = "black", bd=0, activebackground="black", command = im)
+intermedio.pack(side = LEFT, expand = True, fill = BOTH)
 
-intermedio = tk.Button(ventana, text = "Intermedio", bg = "orange", fg = "black", command = im)
-intermedio.pack(fill = tk.X, ipady = 20)
+img_df = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/df.png"))
+dificil = tk.Button(ventana, text = "Dificil", image= img_df, bg = "black", bd=0, activebackground="black", command = df)
+dificil.pack(side = LEFT, expand = True, fill = BOTH)
 
-dificil = tk.Button(ventana, text = "Dificil", bg = "red", fg = "black", command = df)
-dificil.pack(fill = tk.X, ipady = 20)
+img_mdf = ImageTk.PhotoImage(Image.open("../Pruebas/Interfaz/mdf.png"))
+mdificil = tk.Button(ventana, text = "Muy Dificil", image= img_mdf, bg = "black", bd=0, activebackground="black", command = mdf)
+mdificil.pack(side = LEFT, expand = True, fill = BOTH)
 
 ventana.mainloop()
+
 
 board = create_board()
 print_board(board)
@@ -351,7 +361,8 @@ pygame.display.update()
 myfont = pygame.font.SysFont("monospace", 75)
 
 turn = random.randint(PLAYER, AI)
-#turn = AI
+if dificultad.get()==5:
+	turn = AI
 
 while not game_over:
 
@@ -372,9 +383,10 @@ while not game_over:
 				hsv= cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
 				#Fichas rojas
+				hsv = cv.GaussianBlur(hsv, (1,1), 2)
+				hsv = cv.medianBlur(hsv,5)
 				filter =cv.inRange(hsv, low, upper)
-				filter = cv.GaussianBlur(filter, (1,1), 2)
-				filter = cv.medianBlur(filter,5)
+
 				filter = cv.dilate(filter, cv.getStructuringElement(cv.MORPH_RECT,(5,5)), iterations=1)
 				filter = cv.erode(filter, cv.getStructuringElement(cv.MORPH_RECT,(3,3)), iterations=1)
 				filter = cv.erode(filter, cv.getStructuringElement(cv.MORPH_RECT,(5,5)), iterations=1)
@@ -397,18 +409,9 @@ while not game_over:
 				w=cv.waitKey(1)
 				if w & 0xFF == ord("x"):
 					print("asdfg")
-					ans= -1
-					for c in circles[0]:
-						column= int((c[0]-c1+cA/2)/cA)
-						row= int((c[1]-r1+rA/2)/rA)
-						if grid[column][row]==0:
-							ans=column
-						grid[column][row]=1
-					print(grid)
-					time.sleep(1)
+					columna= int((c[0]-c1+cA/2)/cA)+1
 					break
 
-			columna=ans+1
 			print((columna)*100)
 			event.pos=[(columna*100)-1,0]
 			if turn == PLAYER:
@@ -446,7 +449,15 @@ while not game_over:
 			col, minimax_score = minimax(board, 3, -math.inf, math.inf, True)
 
 		elif dificultad.get() == 4:
-			col, minimax_score = minimax(board, 6, -math.inf, math.inf, True)
+			col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
+
+		elif dificultad.get() == 5:
+			col, minimax_score = minimax(board, 7, -math.inf, math.inf, True)
+
+		col_str= str(col)
+		#ser1.write(col_str.encode())
+		#time.sleep(1)
+		#ser1.flush()
 
 		if is_valid_location(board, col):
 
@@ -462,8 +473,7 @@ while not game_over:
 			print_board(board)
 			draw_board(board)
 
-			turn += 1
-			turn = turn % 2
+			turn= (turn+1) % 2
 
 	if game_over:
 		pygame.time.wait(3000)

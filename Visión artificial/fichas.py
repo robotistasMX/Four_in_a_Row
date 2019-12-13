@@ -5,11 +5,9 @@ cap= cv.VideoCapture(0)
 
 file= open("../data.txt", "r")
 low= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
-upper=  np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
+upper= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
 cA= int(file.readline())
 c1= int(file.readline())
-rA= int(file.readline())
-r1= int(file.readline())
 file.close()
 
 grid=[]
@@ -23,9 +21,10 @@ while(1):
     hsv= cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
     #Fichas rojas
+    hsv = cv.GaussianBlur(hsv, (1,1), 2)
+    hsv = cv.medianBlur(hsv,5)
     filter =cv.inRange(hsv, low, upper)
-    filter = cv.GaussianBlur(filter, (1,1), 2)
-    filter = cv.medianBlur(filter,5)
+
     filter = cv.dilate(filter, cv.getStructuringElement(cv.MORPH_RECT,(5,5)), iterations=1)
     filter = cv.erode(filter, cv.getStructuringElement(cv.MORPH_RECT,(3,3)), iterations=1)
     filter = cv.erode(filter, cv.getStructuringElement(cv.MORPH_RECT,(5,5)), iterations=1)
@@ -50,14 +49,7 @@ while(1):
         break
     if w & 0xFF == ord("x"):
         print("asdfg")
-        ans= -1
-        for c in circles[0]:
-            column= int((c[0]-c1+cA/2)/cA)
-            row= int((c[1]-r1+rA/2)/rA)
-            if grid[column][row]==0:
-                ans=column
-            grid[column][row]=1
-        print(grid)
+        ans= int((circles[0][0]-c1+cA/2)/cA)
         print(ans)
         time.sleep(1)
 
