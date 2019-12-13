@@ -20,7 +20,7 @@ void loop(){
   digitalWrite(lf[1],0);
   delay(200);
   digitalWrite(rg[1],0);
-  while(true);*/
+  while(true);
   for (pos = 80; pos <= 180; pos += 2) {
     myservo.write(pos);
     delay(15);
@@ -29,5 +29,5 @@ void loop(){
     myservo.write(pos);
     delay(15);
   }
-  delay(1000);
+  delay(1000);*/
 }
