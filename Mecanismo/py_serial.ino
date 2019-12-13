@@ -1,70 +1,39 @@
-void off(){ 
-   digitalWrite(13, LOW);
-   digitalWrite(12, LOW);
-   digitalWrite(11, LOW);
-   digitalWrite(10, LOW);
-   digitalWrite(9, LOW);
-   digitalWrite(8, LOW);
-   digitalWrite(7, LOW);
+int pl[] = {10, 9, 8, 7, 6, 5, 4};
+
+void off() {
+  for (int i = 10; i >= 4; i--)
+    digitalWrite(i, LOW);
 }
-void setup()
-{
-  pinMode(13, OUTPUT);
-  pinMode(12, OUTPUT);
-  pinMode(11, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(9, OUTPUT);
-  pinMode(8, OUTPUT);
-  pinMode(7, OUTPUT);
 
-  off();
-
+void setup() {
   Serial.begin(9600);
+  for (int i = 10; i >= 4; i--)
+    pinMode(i, OUTPUT);
+  off();
 }
 
-void loop()
-{
-  
-  if (Serial.available() > 0)
-  {
-    int k=Serial.read();
-    if (k == '0')
-    {
-      off();
-      digitalWrite(13, HIGH);
+
+
+void loop() {
+  if (Serial.available() > 0) {
+    int k = Serial.read()- '0';
+    off();
+    digitalWrite(pl[k], HIGH);
+    delay(6000);
+    off();
+  }
+  else {
+    off();
+    for (int i = 0; i <= 6; i++) {
+      digitalWrite(pl[i], HIGH);
+      delay(50);
     }
-    else if (k == '1')
-    {
-      off();
-      digitalWrite(12, HIGH);
-    }
-    else if (k == '2')
-    {
-      off();
-      digitalWrite(11, HIGH);
-    }
-    else if (k == '3')
-    {
-      off();
-      digitalWrite(10, HIGH);
-    }
-    else if (k == '4')
-    {
-      off();
-      digitalWrite(9, HIGH);
-    }
-    else if (k == '5')
-    {
-      off();
-      digitalWrite(8, HIGH);
-    }
-    else if (k == '6')
-    {
-      off();
-      digitalWrite(7, HIGH);
+    off();
+    for (int i = 6; i >= 0; i--) {
+      digitalWrite(pl[i], HIGH);
+      delay(50);
     }
   }
   Serial.flush();
   delay(30);
-
 }
