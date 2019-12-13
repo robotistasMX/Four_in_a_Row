@@ -339,9 +339,16 @@ pygame.display.update()
 
 myfont = pygame.font.SysFont("monospace", 75)
 
-turn = random.randint(PLAYER, AI)
-if dificultad.get()==5:
-	turn = AI
+if dificultad.get() == 5 or dificultad.get() == 4:
+
+	if dificultad.get() == 4:
+		turn = PLAYER
+
+	else:
+		turn = AI
+
+else:
+	turn = random.randint(PLAYER, AI)
 
 while not game_over:
 
