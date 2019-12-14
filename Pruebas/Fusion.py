@@ -377,11 +377,7 @@ while not game_over:
 			sys.exit()
 
 		if turn == PLAYER:
-	    # imprime en la consola la tecla presionada
-	#pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
 			event.pos=0
-		# Ask for Player 1 Input
-			print("ENTER")
 
 			while(True):
 				ret, frame= cap.read()
@@ -415,7 +411,7 @@ while not game_over:
 
 				w=cv.waitKey(1)
 				if w & 0xFF == ord("q"):
-					cv.destroyAllWindows()
+					sys.exit()
 				if w & 0xFF == ord("x"):
 					print("asdfg")
 					for i in range(7):
@@ -493,7 +489,11 @@ while not game_over:
 			turn= (turn+1) % 2
 
 	if game_over:
-		pygame.time.wait(3000)
+		col_str= str(8)
+		ser1.write(col_str.encode())
+		time.sleep(.4)
+		ser1.flush()
+		pygame.time.wait(6000)
 
 cap.release()
 cv.destroyAllWindows()

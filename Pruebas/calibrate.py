@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-cap= cv.VideoCapture(0)
+cap= cv.VideoCapture(1)
 asd= 0
 
 def nothing(x):
@@ -40,7 +40,7 @@ while(1):
     if asd:
         gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
         gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
-        circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 30, 10, 70)
+        circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 25, 10, 70)
         if circles is not None:
             try:
                 for c in circles[0]:
