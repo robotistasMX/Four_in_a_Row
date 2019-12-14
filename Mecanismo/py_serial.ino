@@ -13,10 +13,25 @@ void setup() {
 }
 
 
+bool b=0;
 
 void loop() {
   if (Serial.available() > 0) {
     int k = Serial.read()- '0';
+      if(k==8){
+        for (int i = 0; i <= 6; i++) {
+          digitalWrite(pl[i], HIGH);
+          delay(50);
+        }
+        off();
+        for (int i = 6; i >= 0; i--) {
+          digitalWrite(pl[i], HIGH);
+          delay(50);
+        }
+        b=1;
+       }
+       else
+        b=0;
     off();
     digitalWrite(pl[k], HIGH);
     delay(6000);
@@ -24,15 +39,18 @@ void loop() {
   }
   else {
     off();
-    for (int i = 0; i <= 6; i++) {
-      digitalWrite(pl[i], HIGH);
-      delay(50);
+    if(b==1){
+      for (int i = 0; i <= 6; i++) {
+          digitalWrite(pl[i], HIGH);
+          delay(50);
+        }
+        off();
+        for (int i = 6; i >= 0; i--) {
+          digitalWrite(pl[i], HIGH);
+          delay(50);
+        }
     }
     off();
-    for (int i = 6; i >= 0; i--) {
-      digitalWrite(pl[i], HIGH);
-      delay(50);
-    }
   }
   Serial.flush();
   delay(30);
