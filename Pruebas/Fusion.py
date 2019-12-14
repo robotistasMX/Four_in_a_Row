@@ -12,7 +12,7 @@ import serial
 from tkinter import *
 from PIL import ImageTk, Image
 import os
-cap= cv.VideoCapture(0)
+cap= cv.VideoCapture(1)
 
 file= open("../data.txt", "r")
 low= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
@@ -32,6 +32,7 @@ for i in range(7):
 
 BLUE = (0,0,255)
 BLACK = (0,0,0)
+WHITE = (255,255,255)
 RED = (255,0,0)
 YELLOW = (255,255,0)
 
@@ -264,15 +265,15 @@ def easy_mode(board, piece):
 def draw_board(board):
 	for c in range(COLUMN_COUNT):
 		for r in range(ROW_COUNT):
-			pygame.draw.rect(screen, BLUE, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE))
-			pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+			pygame.draw.rect(screen, YELLOW, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE))
+			pygame.draw.circle(screen, WHITE, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
 
 	for c in range(COLUMN_COUNT):
 		for r in range(ROW_COUNT):
 			if board[r][c] == 1:
 				pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
 			elif board[r][c] == 2:
-				pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+				pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
 	pygame.display.update()
 
 def sf():
@@ -399,7 +400,7 @@ while not game_over:
 
 				gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
 				gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
-				circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 30, 10, 70)
+				circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 25, 10, 70)
 				if circles is not None:
 					try:
 						for c in circles[0]:
@@ -413,6 +414,8 @@ while not game_over:
 				cv.imshow('frame', frame)
 
 				w=cv.waitKey(1)
+				if w & 0xFF == ord("q"):
+					cv.destroyAllWindows()
 				if w & 0xFF == ord("x"):
 					print("asdfg")
 					for i in range(7):

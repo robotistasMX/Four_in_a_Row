@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import time
-cap= cv.VideoCapture(0)
+cap= cv.VideoCapture(1)
 
 file= open("../data.txt", "r")
 low= np.array( [int(file.readline()),int(file.readline()),int(file.readline())] )
@@ -34,7 +34,7 @@ while(1):
 
     gray= cv.cvtColor(result, cv.COLOR_BGR2GRAY)
     gray = cv.adaptiveThreshold(gray,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY,19,3)
-    circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 35, 10, 70)
+    circles =  cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 50, np.array([]), 100, 30, 10, 70)
     if circles is not None:
         try:
             for c in circles[0]:
